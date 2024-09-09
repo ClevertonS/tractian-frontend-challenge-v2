@@ -1,20 +1,55 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import { createRootRoute, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import LogoTractian from '../assets/LOGO TRACTIAN.svg'
+import HeaderLink from '../components/header-link'
+import { useEffect, useState } from 'react'
+import { iCompany } from '../interfaces/iCompany'
 
 export const Route = createRootRoute({
-  component: () => (
-    <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Home
-        </Link>{' '}
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>
-      </div>
-      <hr />
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
+  component: Root,
 })
+
+function Root() {
+  const [companies, setCompanies] = useState<iCompany[]>([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_FAKE_API}/companies`);
+        if (!response.ok) {
+          throw new Error("Ohhh no. There's nothing here...");
+        }
+        const result: iCompany[] = await response.json();
+        setCompanies(result);
+        //console.log(result[0].id)
+        location.pathname == "/" && navigate({ to: `/company/${result[0].id}`})
+        
+      } catch (error) {
+        console.log(error)
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+  return (
+    <main className='flex flex-col bg-gray-150 w-screen h-screen'>
+      <header className='w-full flex items-center justify-between py-3 px-4 bg-plataform-header bg-background-plataform-header '>
+        <img src={LogoTractian} alt="Logo Tractian" />
+        <div className='flex flex-row gap-[10px]'>
+          {companies.map((value) => (
+            <HeaderLink key={value.id} companyName={value.name} to={`/company/${value.id}`} />
+          ))}
+        </div>
+      </header>
+      <div className='m-2'>
+        <Outlet />
+      </div>
+      <TanStackRouterDevtools position="bottom-right" />
+    </main>
+  )
+}
