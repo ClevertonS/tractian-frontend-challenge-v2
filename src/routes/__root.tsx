@@ -26,7 +26,6 @@ function Root() {
         }
         const result: iCompany[] = await response.json();
         dispatch(setCompaniesArray(result))
-        //console.log(result[0].id)
         location.pathname == "/" && navigate({ to: `/company/${result[0].id}`})
         
       } catch (error) {

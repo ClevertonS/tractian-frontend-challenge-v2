@@ -13,7 +13,10 @@ export default {
       "white": "#ffffff",
       "border-card": "#D8DFE6",
       gray: {
-        150: "#E3EAEF"
+        150: "#E3EAEF",
+        200: "#D8DFE6",
+        600: "#77818C",
+        950: "#24292F"
       },
       blue:{
         500: "#2188FF",

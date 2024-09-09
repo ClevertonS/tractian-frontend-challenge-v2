@@ -11,15 +11,9 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as CompanyIndexImport } from './routes/company/index'
 import { Route as CompanyCompanyIdImport } from './routes/company/$companyId'
 
 // Create/Update Routes
-
-const CompanyIndexRoute = CompanyIndexImport.update({
-  path: '/company/',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const CompanyCompanyIdRoute = CompanyCompanyIdImport.update({
   path: '/company/$companyId',
@@ -37,13 +31,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdImport
       parentRoute: typeof rootRoute
     }
-    '/company/': {
-      id: '/company/'
-      path: '/company'
-      fullPath: '/company'
-      preLoaderRoute: typeof CompanyIndexImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -51,36 +38,31 @@ declare module '@tanstack/react-router' {
 
 interface FileRoutesByFullPath {
   '/company/$companyId': typeof CompanyCompanyIdRoute
-  '/company': typeof CompanyIndexRoute
 }
 
 interface FileRoutesByTo {
   '/company/$companyId': typeof CompanyCompanyIdRoute
-  '/company': typeof CompanyIndexRoute
 }
 
 interface FileRoutesById {
   '/company/$companyId': typeof CompanyCompanyIdRoute
-  '/company/': typeof CompanyIndexRoute
 }
 
 interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/company/$companyId' | '/company'
+  fullPaths: '/company/$companyId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/company/$companyId' | '/company'
-  id: '/company/$companyId' | '/company/'
+  to: '/company/$companyId'
+  id: '/company/$companyId'
   fileRoutesById: FileRoutesById
 }
 
 interface RootRouteChildren {
   CompanyCompanyIdRoute: typeof CompanyCompanyIdRoute
-  CompanyIndexRoute: typeof CompanyIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   CompanyCompanyIdRoute: CompanyCompanyIdRoute,
-  CompanyIndexRoute: CompanyIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -95,15 +77,11 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/company/$companyId",
-        "/company/"
+        "/company/$companyId"
       ]
     },
     "/company/$companyId": {
       "filePath": "company/$companyId.tsx"
-    },
-    "/company/": {
-      "filePath": "company/index.tsx"
     }
   }
 }
