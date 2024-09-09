@@ -2,15 +2,18 @@ import { createRootRoute, Outlet, useLocation, useNavigate } from '@tanstack/rea
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import LogoTractian from '../assets/LOGO TRACTIAN.svg'
 import HeaderLink from '../components/header-link'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { iCompany } from '../interfaces/iCompany'
+import { useAppDispatch, useAppSelector } from '../app/store'
+import { setCompaniesArray } from '../features/companies/companiesSlicer'
 
 export const Route = createRootRoute({
   component: Root,
 })
 
 function Root() {
-  const [companies, setCompanies] = useState<iCompany[]>([]);
+  const companies = useAppSelector((state) => state.companies)
+  const dispatch = useAppDispatch()
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -22,7 +25,7 @@ function Root() {
           throw new Error("Ohhh no. There's nothing here...");
         }
         const result: iCompany[] = await response.json();
-        setCompanies(result);
+        dispatch(setCompaniesArray(result))
         //console.log(result[0].id)
         location.pathname == "/" && navigate({ to: `/company/${result[0].id}`})
         
