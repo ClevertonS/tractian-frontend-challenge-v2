@@ -32,7 +32,6 @@ function Root() {
         console.log(error)
       }
     };
-
     fetchData();
   }, []);
 

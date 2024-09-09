@@ -1,7 +1,10 @@
-import { createFileRoute, useLoaderData, useParams } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLoaderData, useParams } from "@tanstack/react-router";
 import { fetchCompanyById } from "../../utils/utils";
 import { useAppSelector } from "../../app/store";
 import SecundaryButton from "../../components/secundaryButton";
+import SearchBar from "../../components/search-bar";
+import DropdownTree from "../../components/dropdown-tree";
+import { iTreeNodeLocations } from "../../interfaces/iTree";
 
 
 export const Route = createFileRoute('/company/$companyId')({
@@ -17,10 +20,10 @@ export const Route = createFileRoute('/company/$companyId')({
 
 function Company() {
     const { companyId } = useParams({from: '/company/$companyId'});
-    const loaderData = useLoaderData({ from: '/company/$companyId' });
+    const loaderData: iTreeNodeLocations[] = JSON.parse(useLoaderData({ from: '/company/$companyId' }));
     const company = useAppSelector((state) => state.companies.find((company) => company.id == companyId))
     return (
-        <section className='w-full h-min rounded border p-4 border-solid border-border-card bg-white'>
+        <section className='w-full h-min flex flex-col gap-3 rounded border p-4 border-solid border-border-card bg-white'>
             <div className='flex flex-row justify-between items-center'>
                 <div>
                     <p className='text-sm text-gray-600 align-middle'><b className='text-gray-950 text-xl font-semibold'>Ativos</b> / {`${company?.name}`}</p>
@@ -29,6 +32,17 @@ function Company() {
                     <SecundaryButton Icon="Alert" isActivated={false} >Sensor de Energia</SecundaryButton>
                     <SecundaryButton Icon="Alert" isActivated={false} >Crítico</SecundaryButton>
                 </div>
+            </div>
+            <div className="flex flex-row gap-2">
+                <div className="w-1/3 border border-solid border-gray-150 rounded-sm">
+                    <SearchBar />
+                    <div className="py-2 px-1">
+                        {loaderData.map((node) => (
+                            <DropdownTree key={node.id} node={node}/>
+                        ))}
+                    </div>
+                </div>
+                <Outlet />
             </div>
         </section>
     )

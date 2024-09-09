@@ -1,13 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import assetsReducer from "../features/assets/assetsSlicer"
-import locationsReducer from "../features/assets/assetsSlicer"
+
 import companiesReducer from "../features/companies/companiesSlicer"
 import { useDispatch, useSelector } from "react-redux";
 
 export const store = configureStore({
     reducer: {
-        assets: assetsReducer,
-        locations: locationsReducer,
         companies: companiesReducer
     },
 });

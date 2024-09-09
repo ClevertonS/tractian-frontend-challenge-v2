@@ -1,6 +1,6 @@
 import { iAsset } from "../interfaces/iAsset";
 import { iLocation } from "../interfaces/iLocation";
-import { iTreeNodeAssets, iTreeNodeLocations } from "../interfaces/iTree";
+import { iTreeBranch, iTreeNodeAssets, iTreeNodeLocations } from "../interfaces/iTree";
 
 
 export async function fetchCompanyById(id: string): Promise<string> {
@@ -40,8 +40,8 @@ function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], assets: iAs
     const assetsRoots = GenerateAssetsRoots(assets);
 
     const assetsMap: { [key: string]: iTreeNodeAssets } = {};
-    const nodeMap: { [key: string]: iTreeNodeLocations } = {};
-    const rootsLocations: iTreeNodeLocations[] = [];
+    const nodeMap: { [key: string]: iTreeBranch } = {};
+    const rootsLocations: iTreeBranch[] = [];
 
     assetsRoots.forEach(asset => {
         assetsMap[asset.id] = asset
@@ -49,6 +49,7 @@ function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], assets: iAs
 
     locationsTree.forEach(location => {
         location.children = [];
+        location.type = "Location"
         nodeMap[location.id] = location
     });
 
