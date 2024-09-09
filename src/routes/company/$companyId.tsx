@@ -3,8 +3,8 @@ import { fetchCompanyById } from "../../utils/utils";
 import { useAppSelector } from "../../app/store";
 import SecundaryButton from "../../components/secundaryButton";
 import SearchBar from "../../components/search-bar";
-import DropdownTree from "../../components/dropdown-tree";
 import { iTreeNodeLocations } from "../../interfaces/iTree";
+import NodedDetails from "../../components/node-details";
 
 
 export const Route = createFileRoute('/company/$companyId')({
@@ -38,7 +38,7 @@ function Company() {
                     <SearchBar />
                     <div className="py-2 px-1">
                         {loaderData.map((node) => (
-                            <DropdownTree key={node.id} node={node}/>
+                            <NodedDetails key={node.id} node={node} onFocus={false}/>
                         ))}
                     </div>
                 </div>
@@ -47,5 +47,3 @@ function Company() {
         </section>
     )
 }
-
-

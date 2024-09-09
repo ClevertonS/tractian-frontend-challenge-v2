@@ -12,6 +12,8 @@ export default {
       "plataform-header": "#17192D",
       "white": "#ffffff",
       "border-card": "#D8DFE6",
+      "node-font": "#17192D",
+      black: "#000000",
       gray: {
         150: "#E3EAEF",
         200: "#D8DFE6",
