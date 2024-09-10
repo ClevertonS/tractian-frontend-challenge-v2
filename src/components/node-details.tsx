@@ -8,10 +8,11 @@ import { iTreeBranch } from "../interfaces/iTree";
 
 export interface iNodeProps {
     node: iTreeBranch
+    isSearch?: boolean
 }
 
-export default function NodedDetails({ node }: iNodeProps) {
-    const [isOpen, setIsOpen] = useState(false);
+export default function NodedDetails({ node, isSearch = false }: iNodeProps, ) {
+    const [isOpen, setIsOpen] = useState(isSearch);
     const hasChildren = node.children && node.children.length > 0;
     function togleOpen() {
         setIsOpen(!isOpen)
@@ -26,7 +27,7 @@ export default function NodedDetails({ node }: iNodeProps) {
                 <div className="relative">
                     <span className="-left-6 absolute border-l-2 border-black border-opacity-5 h-full"/>
                     {node.children!.map((child) => (
-                        <NodedDetails key={child.id} node={child} />
+                        <NodedDetails key={child.id} node={child} isSearch={isSearch} />
                     ))}
                 </div>
             )}

@@ -3,12 +3,16 @@ import { iLocation } from "../interfaces/iLocation";
 import { iTreeBranch, iTreeNodeAssets, iTreeNodeLocations } from "../interfaces/iTree";
 
 
-export async function fetchCompanyById(id: string): Promise<string> {
+
+export async function fetchCompanyById(id: string): Promise<iTreeBranch[]> {
     const locations = await fetchLocations(id);
     const assets = await fetchAssets(id);
-
-    return JSON.stringify(GenerateLocationsRoots(locations, assets));
+    return SortNodesByChildrenCount(GenerateLocationsRoots(locations, assets));
 }
+
+const SortNodesByChildrenCount = (nodes: iTreeBranch[]): iTreeBranch[] => {
+    return nodes.sort((a, b) =>  b.children!.length - a.children!.length);
+  };
 
 function GenerateAssetsRoots(assetsTree: iTreeNodeAssets[]) {
     const nodeMap: { [key: string]: iTreeNodeAssets } = {};
@@ -94,7 +98,7 @@ async function fetchLocations(id: string): Promise<iLocation[]> {
 
     } catch (error) {
         console.error('Failed to fetch locations:', error);
-        return []; // Retorna um array vazio em caso de erro
+        return []; 
     }
 }
 
@@ -110,7 +114,7 @@ async function fetchAssets(id: string): Promise<iAsset[]> {
 
     } catch (error) {
         console.error('Failed to fetch locations:', error);
-        return []; // Retorna um array vazio em caso de erro
+        return []; 
     }
 }
 

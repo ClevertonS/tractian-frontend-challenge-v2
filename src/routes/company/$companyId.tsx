@@ -1,10 +1,10 @@
-import { createFileRoute, Outlet, useLoaderData, useParams } from "@tanstack/react-router";
-import { fetchCompanyById } from "../../utils/utils";
+import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import { useAppSelector } from "../../app/store";
 import SecundaryButton from "../../components/secundaryButton";
 import SearchBar from "../../components/search-bar";
-import { iTreeBranch } from "../../interfaces/iTree";
-import NodedDetails from "../../components/node-details";
+
+import { lazy, useState } from "react";
+import useTreeSearch from "../../hooks/useTreeSearch";
 
 
 export const Route = createFileRoute('/company/$companyId')({
@@ -14,14 +14,19 @@ export const Route = createFileRoute('/company/$companyId')({
         }),
         stringify: ({ companyId }) => ({ companyId: `${companyId}` })
     },
-    loader: ({ params: { companyId } }) => fetchCompanyById(companyId),
     component: Company
 })
-
+const DropdownTree = lazy(() => import("../../components/dropdown-tree"));
 function Company() {
-    const { companyId } = useParams({from: '/company/$companyId'});
-    const loaderData: iTreeBranch[] = JSON.parse(useLoaderData({ from: '/company/$companyId' }));
+    const { companyId } = useParams({ from: '/company/$companyId' });
     const company = useAppSelector((state) => state.companies.find((company) => company.id == companyId))
+    const [, setTreeSearch] = useTreeSearch();
+    const [searchValue, setSearchValue] = useState("")
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(event.target.value);
+        setTreeSearch(event.target.value)
+    };
+
     return (
         <section className='w-full h-min flex flex-col gap-3 rounded border p-4 border-solid border-border-card bg-white'>
             <div className='flex flex-row justify-between items-center'>
@@ -33,14 +38,10 @@ function Company() {
                     <SecundaryButton Icon="Alert" isActivated={false} >Crítico</SecundaryButton>
                 </div>
             </div>
-            <div className="flex flex-row gap-2">
-                <div className="w-1/3 border border-solid border-gray-150 rounded-sm">
-                    <SearchBar />
-                    <div className="py-2 px-1">
-                        {loaderData.map((node) => (
-                            <NodedDetails key={node.id} node={node}/>
-                        ))}
-                    </div>
+            <div className="flex flex-row gap-2 h-[80vh]">
+                <div className="w-1/3 h-full border border-solid border-gray-150 rounded-sm">
+                    <SearchBar value={searchValue} onChange={handleSearchChange} />
+                    <DropdownTree />
                 </div>
                 <Outlet />
             </div>

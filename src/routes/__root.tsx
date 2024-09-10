@@ -33,7 +33,7 @@ function Root() {
       }
     };
     fetchData();
-  }, []);
+  }, [location]);
 
 
 

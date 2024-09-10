@@ -3,7 +3,7 @@ import { useAppSelector } from "../app/store";
 import { iTreeBranch } from "../interfaces/iTree";
 import useDebounce from "./useDebounce";
 import { useDispatch } from "react-redux";
-import { setSearchNode } from "../features/companyTree/companyTreeSlicer";
+import { setIsSearching, setSearchNode } from "../features/companyTree/companyTreeSlicer";
 
 function findNodesContainingName (nodes: iTreeBranch[], nodeName: string): iTreeBranch[] {
     const result: iTreeBranch[] = [];
@@ -23,8 +23,8 @@ function findNodesContainingName (nodes: iTreeBranch[], nodeName: string): iTree
 
 export default function useTreeSearch()
 {
-    const searchTree = useAppSelector((state) => state.companyTree.searchResult)
-    const initalTree = useAppSelector((state) => state.companyTree.searchResult)
+    
+    const initalTree = useAppSelector((state) => state.companyTree.tree)
     const dispatch = useDispatch();
     const [filteredTree, setLocalTree] = useState<iTreeBranch[]>([])
     const [localSearchValue, setLocalSearchValue] = useState("");
@@ -37,15 +37,23 @@ export default function useTreeSearch()
     useEffect(() => {
         if (timeToSearch) {
             if (localSearchValue != "") {
-                const searchResult = findNodesContainingName(searchTree, localSearchValue) 
+                dispatch(setIsSearching(true))
+                const searchResult = findNodesContainingName(initalTree, localSearchValue) 
                 setLocalTree(searchResult)
+
                 dispatch(setSearchNode(searchResult))
             } else {
+                dispatch(setIsSearching(false))
                 setLocalTree(initalTree)
                 dispatch(setSearchNode(initalTree))
             }
         }
-    }, [timeToSearch])
+    }, [timeToSearch, localSearchValue])
+
+    useEffect(() => {
+        setLocalTree(initalTree)
+        dispatch(setSearchNode(initalTree))
+    }, [initalTree])
 
     return [filteredTree, setTreeSearch] as const;
 }

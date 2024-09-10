@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { iTreeBranch } from "../../interfaces/iTree";
 
 type TreeState = {
+    isLoadingData: boolean,
+    isSearching: boolean,
     tree: iTreeBranch[];
     searchResult: iTreeBranch[];
     filtredApplied: string[]
@@ -10,7 +12,9 @@ type TreeState = {
 const initialState: TreeState = {
     tree: [],
     searchResult: [],
-    filtredApplied: []
+    filtredApplied: [],
+    isLoadingData: true,
+    isSearching: false
 };
 
 
@@ -19,14 +23,21 @@ export const companyTreeSlcier = createSlice({
     name: "companyTree",
     initialState,
     reducers: {
-        setCompanyTree(state, action: PayloadAction<iTreeBranch[]>)
+        setCompanyTree(state, action: PayloadAction<iTreeBranch[] | []>)
         {
-            state.tree = action.payload;
             state.searchResult = state.tree
+            state.tree = action.payload;
         }, 
-        setSearchNode(state, action: PayloadAction<iTreeBranch[]>)
+        setSearchNode(state, action: PayloadAction<iTreeBranch[] | []>)
         {
             state.searchResult = action.payload
+        },
+        setIsLoading(state, action: PayloadAction<boolean>)
+        {
+            state.isLoadingData = action.payload
+        },setIsSearching(state, action: PayloadAction<boolean>)
+        {
+            state.isSearching = action.payload
         }, 
         pushFiltre(state, action: PayloadAction<string>)
         {
@@ -39,5 +50,5 @@ export const companyTreeSlcier = createSlice({
     }
 })
 
-export const {setCompanyTree, setSearchNode, pushFiltre, removeFiltre} = companyTreeSlcier.actions;
+export const {setCompanyTree, setSearchNode, setIsLoading, setIsSearching,pushFiltre, removeFiltre} = companyTreeSlcier.actions;
 export default companyTreeSlcier.reducer;

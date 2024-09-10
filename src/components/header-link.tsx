@@ -11,7 +11,7 @@ export default function HeaderLink({companyName, to}: iHeaderLink){
     const location = useLocation();
     const [sameUrl, setSameUrl] = useState<boolean>(false)
     useEffect(() => {
-        if (to == location.pathname)
+        if (location.pathname.includes(to))
         {
             setSameUrl(true);
         } else {

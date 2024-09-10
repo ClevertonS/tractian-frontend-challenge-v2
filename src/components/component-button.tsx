@@ -14,10 +14,10 @@ export default function ComponentButton({node}: iNodeProps) {
     const location = useLocation();
     const navigate = useNavigate();
     useEffect(() => {
-        location.pathname == `/${companyId}/${node.id}` ? setIsCurrentUrlId(true) : setIsCurrentUrlId(false)
+        location.pathname == `/company/${companyId}/${node.id}` ? setIsCurrentUrlId(true) : setIsCurrentUrlId(false)
     })
     return(
-    <button onClick={() => !isCurrentUrlId && navigate({to: `/${companyId}/${node.id}`})} className={`flex flex-row items-center w-full gap-1 px-1 text-sm ${ isCurrentUrlId? "bg-blue-500 text-white" : " text-node-font"}`}>
+    <button onClick={() => !isCurrentUrlId && navigate({to: `/company/${companyId}/${node.id}`})} className={`flex flex-row items-center w-full gap-1 px-1 py-[1px] text-sm ${ isCurrentUrlId? "bg-blue-500 text-white" : " text-node-font"}`}>
         <Codepen onFocus={isCurrentUrlId} />
         <p className="ml-1 ">{node.name}</p>
         <SensorType status={node.status!} sensorType={node.sensorType!} />

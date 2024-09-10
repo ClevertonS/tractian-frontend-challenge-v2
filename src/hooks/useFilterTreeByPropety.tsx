@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback} from "react";
 import { useAppSelector } from "../app/store";
 import { iTreeBranch } from "../interfaces/iTree";
 import { useDispatch } from "react-redux";
@@ -51,5 +51,5 @@ export default function useFilterTreeByPropety(isFilterActive: boolean, criteria
         }
         dispatch(setSearchNode(filteredNodes))
     }, [isFilterActive, criteria, searchTree, filtre, dispatch, getTreeSearch])
-    
+
 }
