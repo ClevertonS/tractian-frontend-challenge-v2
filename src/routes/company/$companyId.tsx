@@ -3,8 +3,9 @@ import { useAppSelector } from "../../app/store";
 import SecundaryButton from "../../components/secundaryButton";
 import SearchBar from "../../components/search-bar";
 
-import { lazy, useState } from "react";
+import { useState } from "react";
 import useTreeSearch from "../../hooks/useTreeSearch";
+import DropdownTree from "../../components/dropdown-tree";
 
 
 export const Route = createFileRoute('/company/$companyId')({
@@ -16,7 +17,7 @@ export const Route = createFileRoute('/company/$companyId')({
     },
     component: Company
 })
-const DropdownTree = lazy(() => import("../../components/dropdown-tree"));
+
 function Company() {
     const { companyId } = useParams({ from: '/company/$companyId' });
     const company = useAppSelector((state) => state.companies.find((company) => company.id == companyId))

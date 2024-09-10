@@ -11,7 +11,7 @@ export interface iNodeProps {
     isSearch?: boolean
 }
 
-export default function NodedDetails({ node, isSearch = false }: iNodeProps, ) {
+export default function NodeDetails({ node, isSearch = false }: iNodeProps, ) {
     const [isOpen, setIsOpen] = useState(isSearch);
     const hasChildren = node.children && node.children.length > 0;
     function togleOpen() {
@@ -27,7 +27,7 @@ export default function NodedDetails({ node, isSearch = false }: iNodeProps, ) {
                 <div className="relative">
                     <span className="-left-6 absolute border-l-2 border-black border-opacity-5 h-full"/>
                     {node.children!.map((child) => (
-                        <NodedDetails key={child.id} node={child} isSearch={isSearch} />
+                        <NodeDetails key={child.id} node={child} isSearch={isSearch} />
                     ))}
                 </div>
             )}

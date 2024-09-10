@@ -1,39 +1,66 @@
+import { Dispatch } from "@reduxjs/toolkit";
 import { iAsset } from "../interfaces/iAsset";
 import { iLocation } from "../interfaces/iLocation";
 import { iTreeBranch, iTreeNodeAssets, iTreeNodeLocations } from "../interfaces/iTree";
+import { setCompanyTree } from "../features/companyTree/companyTreeSlicer";
 
 
 
-export async function fetchCompanyById(id: string): Promise<iTreeBranch[]> {
-    const locations = await fetchLocations(id);
-    const assets = await fetchAssets(id);
-    return SortNodesByChildrenCount(GenerateLocationsRoots(locations, assets));
+export async function fetchCompanyById(id: string, dispatch: Dispatch) {
+    const locations: iLocation[] = [];
+    const assets: iAsset[] = [];
+
+
+    function handleAssetsChunk(chunk:iAsset[]) {
+        assets.push(...chunk);
+        updateTreeIfPossible();
+    };
+
+
+    function handleLocationsChunk(chunk: iLocation[]) {
+        locations.push(...chunk);
+        updateTreeIfPossible();
+    };
+
+    function updateTreeIfPossible() {
+        if (locations.length > 0 && assets.length > 0) {
+            const tree = SortNodesByChildrenCount(GenerateLocationsRoots(locations, assets));
+            
+            dispatch(setCompanyTree(tree));
+        }
+    };
+
+    await Promise.all([
+        fetchDataWithStreaming<iLocation>(`${import.meta.env.VITE_FAKE_API}/companies/${id}/locations`, handleLocationsChunk),
+        fetchDataWithStreaming<iAsset>(`${import.meta.env.VITE_FAKE_API}/companies/${id}/assets`, handleAssetsChunk)
+    ]);
 }
 
 const SortNodesByChildrenCount = (nodes: iTreeBranch[]): iTreeBranch[] => {
-    return nodes.sort((a, b) =>  b.children!.length - a.children!.length);
-  };
+    return nodes.sort((a, b) => b.children!.length - a.children!.length);
+};
 
 function GenerateAssetsRoots(assetsTree: iTreeNodeAssets[]) {
     const nodeMap: { [key: string]: iTreeNodeAssets } = {};
     const rootsAssets: iTreeNodeAssets[] = [];
 
     assetsTree.forEach(asset => {
-        asset.children = [];
-        asset.type = determineAssetType(asset)
-        nodeMap[asset.id] = asset
+        const assetCopy = { ...asset, children: [] };
+        assetCopy.type = determineAssetType(asset);
+        nodeMap[asset.id] = assetCopy;
     });
 
     assetsTree.forEach(asset => {
+        const assetCopy = nodeMap[asset.id];
         if (asset.parentId) {
             const parent = nodeMap[asset.parentId];
             if (parent) {
-                parent.children!.push(asset);
+                parent.children!.push(assetCopy);
             }
         } else {
-            rootsAssets.push(asset);
+            rootsAssets.push(assetCopy);
         }
-    })
+    });
 
     return rootsAssets;
 }
@@ -86,35 +113,26 @@ function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], assets: iAs
     return rootsLocations;
 }
 
-async function fetchLocations(id: string): Promise<iLocation[]> {
+async function fetchDataWithStreaming<T>(endpoint: string, onObjectParsed: (chunk: T[]) => void) {
     try {
-        const response = await fetch(`${import.meta.env.VITE_FAKE_API}/companies/${id}/locations`)
+        const response = await fetch(endpoint);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const locations: iLocation[] = await response.json()
-
-        return locations
-
-    } catch (error) {
-        console.error('Failed to fetch locations:', error);
-        return []; 
-    }
-}
-
-async function fetchAssets(id: string): Promise<iAsset[]> {
-    try {
-        const response = await fetch(`${import.meta.env.VITE_FAKE_API}/companies/${id}/assets`)
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const reader = response.body!.getReader();
+        const decoder = new TextDecoder();
+        let jsonString = "";
+        while (true) {
+            console.log("Passei aqui")
+            const { done, value } = await reader.read();
+            if (done) break;
+            jsonString += decoder.decode(value, { stream: true });
+            onObjectParsed(JSON.parse(jsonString))
         }
-        const assets: iAsset[] = await response.json()
-
-        return assets
-
+        
     } catch (error) {
-        console.error('Failed to fetch locations:', error);
-        return []; 
+        console.error('Failed to fetch data:', error);
+        return [];
     }
 }
 
