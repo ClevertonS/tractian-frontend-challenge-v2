@@ -12,12 +12,18 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as CompanyCompanyIdImport } from './routes/company/$companyId'
+import { Route as CompanyCompanyIdAssetIdImport } from './routes/company/$companyId.$assetId'
 
 // Create/Update Routes
 
 const CompanyCompanyIdRoute = CompanyCompanyIdImport.update({
   path: '/company/$companyId',
   getParentRoute: () => rootRoute,
+} as any)
+
+const CompanyCompanyIdAssetIdRoute = CompanyCompanyIdAssetIdImport.update({
+  path: '/$assetId',
+  getParentRoute: () => CompanyCompanyIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -31,38 +37,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdImport
       parentRoute: typeof rootRoute
     }
+    '/company/$companyId/$assetId': {
+      id: '/company/$companyId/$assetId'
+      path: '/$assetId'
+      fullPath: '/company/$companyId/$assetId'
+      preLoaderRoute: typeof CompanyCompanyIdAssetIdImport
+      parentRoute: typeof CompanyCompanyIdImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface CompanyCompanyIdRouteChildren {
+  CompanyCompanyIdAssetIdRoute: typeof CompanyCompanyIdAssetIdRoute
+}
+
+const CompanyCompanyIdRouteChildren: CompanyCompanyIdRouteChildren = {
+  CompanyCompanyIdAssetIdRoute: CompanyCompanyIdAssetIdRoute,
+}
+
+const CompanyCompanyIdRouteWithChildren =
+  CompanyCompanyIdRoute._addFileChildren(CompanyCompanyIdRouteChildren)
+
 interface FileRoutesByFullPath {
-  '/company/$companyId': typeof CompanyCompanyIdRoute
+  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/company/$companyId/$assetId': typeof CompanyCompanyIdAssetIdRoute
 }
 
 interface FileRoutesByTo {
-  '/company/$companyId': typeof CompanyCompanyIdRoute
+  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/company/$companyId/$assetId': typeof CompanyCompanyIdAssetIdRoute
 }
 
 interface FileRoutesById {
-  '/company/$companyId': typeof CompanyCompanyIdRoute
+  '/company/$companyId': typeof CompanyCompanyIdRouteWithChildren
+  '/company/$companyId/$assetId': typeof CompanyCompanyIdAssetIdRoute
 }
 
 interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/company/$companyId'
+  fullPaths: '/company/$companyId' | '/company/$companyId/$assetId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/company/$companyId'
-  id: '/company/$companyId'
+  to: '/company/$companyId' | '/company/$companyId/$assetId'
+  id: '/company/$companyId' | '/company/$companyId/$assetId'
   fileRoutesById: FileRoutesById
 }
 
 interface RootRouteChildren {
-  CompanyCompanyIdRoute: typeof CompanyCompanyIdRoute
+  CompanyCompanyIdRoute: typeof CompanyCompanyIdRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  CompanyCompanyIdRoute: CompanyCompanyIdRoute,
+  CompanyCompanyIdRoute: CompanyCompanyIdRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -81,7 +108,14 @@ export const routeTree = rootRoute
       ]
     },
     "/company/$companyId": {
-      "filePath": "company/$companyId.tsx"
+      "filePath": "company/$companyId.tsx",
+      "children": [
+        "/company/$companyId/$assetId"
+      ]
+    },
+    "/company/$companyId/$assetId": {
+      "filePath": "company/$companyId.$assetId.tsx",
+      "parent": "/company/$companyId"
     }
   }
 }

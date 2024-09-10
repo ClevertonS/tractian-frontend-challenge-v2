@@ -38,7 +38,7 @@ function Company() {
                     <SearchBar />
                     <div className="py-2 px-1">
                         {loaderData.map((node) => (
-                            <NodedDetails key={node.id} node={node} onFocus={false}/>
+                            <NodedDetails key={node.id} node={node}/>
                         ))}
                     </div>
                 </div>
