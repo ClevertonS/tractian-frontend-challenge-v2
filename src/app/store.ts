@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-
-import companiesReducer from "../features/companies/companiesSlicer"
 import { useDispatch, useSelector } from "react-redux";
+import companiesReducer from "../features/companies/companiesSlicer";
+import companyTreeReducer from "../features/companyTree/companyTreeSlicer"
 
 export const store = configureStore({
     reducer: {
-        companies: companiesReducer
+        companies: companiesReducer,
+        companyTree: companyTreeReducer
     },
 });
 

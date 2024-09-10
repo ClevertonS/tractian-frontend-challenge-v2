@@ -2,8 +2,8 @@ import { iAsset } from "./iAsset";
 import { iLocation } from "./iLocation";
 
 
-export interface iTreeBranch extends iTreeNodeAssets, iTreeNodeLocations{
-    children?: iTreeNodeLocations[] | iTreeNodeAssets[];
+export interface iTreeBranch extends iTreeNodeLocations ,iTreeNodeAssets{
+    children?: iTreeNodeAssets[] | iTreeNodeLocations[];
 }
 
 export interface iTreeNodeLocations extends iLocation{

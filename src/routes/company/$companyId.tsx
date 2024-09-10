@@ -3,7 +3,7 @@ import { fetchCompanyById } from "../../utils/utils";
 import { useAppSelector } from "../../app/store";
 import SecundaryButton from "../../components/secundaryButton";
 import SearchBar from "../../components/search-bar";
-import { iTreeNodeLocations } from "../../interfaces/iTree";
+import { iTreeBranch } from "../../interfaces/iTree";
 import NodedDetails from "../../components/node-details";
 
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/company/$companyId')({
 
 function Company() {
     const { companyId } = useParams({from: '/company/$companyId'});
-    const loaderData: iTreeNodeLocations[] = JSON.parse(useLoaderData({ from: '/company/$companyId' }));
+    const loaderData: iTreeBranch[] = JSON.parse(useLoaderData({ from: '/company/$companyId' }));
     const company = useAppSelector((state) => state.companies.find((company) => company.id == companyId))
     return (
         <section className='w-full h-min flex flex-col gap-3 rounded border p-4 border-solid border-border-card bg-white'>
