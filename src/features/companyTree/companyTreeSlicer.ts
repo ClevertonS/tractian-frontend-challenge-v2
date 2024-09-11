@@ -47,7 +47,7 @@ export const companyTreeSlcier = createSlice({
         },
         removeFiltre(state, action: PayloadAction<string>)
         {
-            state.filtredApplied.splice(state.filtredApplied.indexOf(action.payload))
+            state.filtredApplied.splice(state.filtredApplied.indexOf(action.payload), 1)
         },setComponentById(state, action: PayloadAction<string>)
         {
             state.componentById = state.searchResult.filter((component) => component.id == action.payload)[0]

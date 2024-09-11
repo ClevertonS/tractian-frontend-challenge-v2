@@ -1,4 +1,4 @@
-import { useCallback} from "react";
+import { useEffect, useState} from "react";
 import { useAppSelector } from "../app/store";
 import { iTreeBranch } from "../interfaces/iTree";
 import { useDispatch } from "react-redux";
@@ -23,33 +23,39 @@ function findNodesByCriteria(nodes: iTreeBranch[], criteria: "sensorType" | "sta
 }
     
 
-export default function useFilterTreeByPropety(isFilterActive: boolean, criteria: "sensorType" | "status")
+export default function useFilterTreeByPropety()
 {
     const searchTree = useAppSelector((state) => state.companyTree.searchResult)
     const filtre = useAppSelector((state) => state.companyTree.filtredApplied)
     const dispatch = useDispatch();
     const [getTreeSearch] = useTreeSearch();
+    const [criteria, setCriteria] = useState<"sensorType" | "status">()
+    const [isFilterActive, setIsFilterActive] = useState(false)
 
-    useCallback(() => {
+    useEffect(() => {
         let filteredNodes = [...searchTree];
-
+        console.log(isFilterActive)
         if (isFilterActive) {
             if (criteria === "status") {
                 filteredNodes = findNodesByCriteria(filteredNodes, "status", "alert");
             } else if (criteria === "sensorType") {
                 filteredNodes = findNodesByCriteria(filteredNodes, "sensorType", "energy");
             }
-            dispatch(pushFiltre(criteria))
+            dispatch(pushFiltre(criteria!))
         } else {
-            dispatch(removeFiltre(criteria))
+            dispatch(removeFiltre(criteria!))
             if(filtre.length == 0)
             {
+                console.log(getTreeSearch)
                 dispatch(setSearchNode(getTreeSearch))
             } else {
-                filteredNodes = findNodesByCriteria(filteredNodes, criteria, criteria == "status" ? "energy" : "alert");
+                
+                filteredNodes = [...searchTree];
             }
         }
         dispatch(setSearchNode(filteredNodes))
-    }, [isFilterActive, criteria, searchTree, filtre, dispatch, getTreeSearch])
+    }, [isFilterActive])
 
+
+    return [setIsFilterActive ,setCriteria] as const
 }

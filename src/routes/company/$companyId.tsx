@@ -28,6 +28,8 @@ function Company() {
         setSearchValue(event.target.value);
         setTreeSearch(event.target.value)
     };
+    const [sensorTypeButtonFilterIsActive, setSensorTypeButtonFilterIsActive] = useState(false)
+    const [statusTypeButtonFilterIsActive, setStatusTypeButtonFilterIsActive] = useState(false)
 
     return (
         <section className='w-full h-min flex flex-col gap-3 rounded border p-4 border-solid border-border-card bg-white'>
@@ -36,8 +38,12 @@ function Company() {
                     <p className='text-sm text-gray-600 align-middle'><b className='text-gray-950 text-xl font-semibold'>Ativos</b> / {`${company?.name}`}</p>
                 </div>
                 <div className="flex flex-row gap-2 rounded-[3px]">
-                    <SecundaryButton Icon="Alert" isActivated={false} >Sensor de Energia</SecundaryButton>
-                    <SecundaryButton Icon="Alert" isActivated={false} >Crítico</SecundaryButton>
+                    <SecundaryButton criteria="sensorType" isActivated={sensorTypeButtonFilterIsActive} onClick={() => {
+                        setSensorTypeButtonFilterIsActive(!sensorTypeButtonFilterIsActive)
+                    }}>Sensor de Energia</SecundaryButton>
+                    <SecundaryButton criteria="status" isActivated={statusTypeButtonFilterIsActive} onClick={() => {
+                        setStatusTypeButtonFilterIsActive(!statusTypeButtonFilterIsActive)
+                    }}>Crítico</SecundaryButton>
                 </div>
             </div>
             <div className="flex flex-row gap-2 h-[80vh]">
