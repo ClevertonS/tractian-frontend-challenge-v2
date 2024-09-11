@@ -28,9 +28,6 @@ export const companyTreeSlcier = createSlice({
             state.tree = action.payload;
             state.searchResult = state.tree
         },
-        addTreeNodes(state, action: PayloadAction<iTreeBranch[]>){
-            state.tree = [...state.tree, ...action.payload]
-        },
         setSearchNode(state, action: PayloadAction<iTreeBranch[] | []>)
         {
             state.searchResult = action.payload
