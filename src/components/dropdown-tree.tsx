@@ -2,7 +2,7 @@ import { useParams } from "@tanstack/react-router";
 import { useAppSelector } from "../app/store"
 import NodeDetails from "./node-details"
 import { shallowEqual, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
 import { fetchCompanyById } from "../utils/utils";
 import { setCompanyTree, setIsLoading } from "../features/companyTree/companyTreeSlicer";
 import Loading from "./loading";
@@ -13,13 +13,14 @@ export default function DropdownTree() {
     const isSearching = useAppSelector((state) => state.companyTree.isSearching)
     const isLoading = useAppSelector((state) => state.companyTree.isLoadingData, shallowEqual)
     const loaderData = useAppSelector((state) => state.companyTree.searchResult, shallowEqual)
+    const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 dispatch(setIsLoading(true))
-                const result = await fetchCompanyById(companyId)
-                dispatch(setCompanyTree(result))
+                await fetchCompanyById(companyId,dispatch, isPending, startTransition)
+
             } catch (error) {
                 console.log(error)
             } finally {
@@ -33,7 +34,7 @@ export default function DropdownTree() {
         return (<Loading />)
     }
     return (
-        <div className="mx-1 my-2">
+        <div className="mx-1 my-2 overflow-auto">
             {loaderData.map((node) =>
                 <NodeDetails key={node.id} node={node} isSearch={isSearching} />
             )}

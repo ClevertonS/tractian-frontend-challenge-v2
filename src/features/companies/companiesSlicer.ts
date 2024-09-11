@@ -9,12 +9,9 @@ export const assetsSlice = createSlice({
     reducers: {
         setCompaniesArray(state, action: PayloadAction<iCompany[]>) {
             return state = action.payload;
-        },
-        cleanCompaniesArray(state) {
-            return state = [];
         }
     }
 })
 
-export const {setCompaniesArray, cleanCompaniesArray} = assetsSlice.actions;
+export const {setCompaniesArray} = assetsSlice.actions;
 export default assetsSlice.reducer;

@@ -6,6 +6,7 @@ import SearchBar from "../../components/search-bar";
 import { useState } from "react";
 import useTreeSearch from "../../hooks/useTreeSearch";
 import DropdownTree from "../../components/dropdown-tree";
+import { shallowEqual } from "react-redux";
 
 
 export const Route = createFileRoute('/company/$companyId')({

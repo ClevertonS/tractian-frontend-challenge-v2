@@ -6,7 +6,8 @@ type TreeState = {
     isSearching: boolean,
     tree: iTreeBranch[];
     searchResult: iTreeBranch[];
-    filtredApplied: string[]
+    filtredApplied: string[];
+    componentById: iTreeBranch | null;
 }
 
 const initialState: TreeState = {
@@ -14,7 +15,8 @@ const initialState: TreeState = {
     searchResult: [],
     filtredApplied: [],
     isLoadingData: true,
-    isSearching: false
+    isSearching: false,
+    componentById: null
 };
 
 
@@ -46,9 +48,12 @@ export const companyTreeSlcier = createSlice({
         removeFiltre(state, action: PayloadAction<string>)
         {
             state.filtredApplied.splice(state.filtredApplied.indexOf(action.payload))
+        },setComponentById(state, action: PayloadAction<string>)
+        {
+            state.componentById = state.searchResult.filter((component) => component.id == action.payload)[0]
         }
     }
 })
 
-export const {setCompanyTree, setSearchNode, setIsLoading, setIsSearching,pushFiltre, removeFiltre} = companyTreeSlcier.actions;
+export const {setCompanyTree, setSearchNode, setIsLoading, setIsSearching,pushFiltre, removeFiltre,setComponentById} = companyTreeSlcier.actions;
 export default companyTreeSlcier.reducer;

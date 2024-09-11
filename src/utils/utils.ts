@@ -1,25 +1,34 @@
 import { iAsset } from "../interfaces/iAsset";
 import { iLocation } from "../interfaces/iLocation";
 import { iTreeBranch, iTreeNodeAssets, iTreeNodeLocations } from "../interfaces/iTree";
+import { TransitionStartFunction } from "react";
+import { setCompanyTree } from "../features/companyTree/companyTreeSlicer";
+import { Dispatch } from "@reduxjs/toolkit";
 
 
-export async function fetchCompanyById(id: string): Promise<iTreeBranch[]> {
+export async function fetchCompanyById(id: string, dispatch: Dispatch, isPending: boolean, startTransition:TransitionStartFunction) {
     const locations = await fetchData<iLocation>(id, 'locations');
     const assets = await fetchData<iAsset>(id, 'assets');
-    return await GenerateLocationsRoots(locations, assets);
+    startTransition(() => {
+        
+        const result = GenerateLocationsRoots(locations, assets);
+        console.log("morri :(")
+        dispatch(setCompanyTree(result))
+    })
+
 }
 
-async function GenerateAssetsRoots(assetsTree: iTreeNodeAssets[]): Promise<iTreeNodeAssets[]> {
+function GenerateAssetsRoots(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
     const nodeMap: { [key: string]: iTreeNodeAssets } = {};
     const rootsAssets: iTreeNodeAssets[] = [];
 
-    await Promise.all(assetsTree.map(async (asset) => {
+    assetsTree.map(async (asset) => {
         asset.children = [];
         asset.type = determineAssetType(asset);
         nodeMap[asset.id] = asset;
-    }));
+    });
 
-    await Promise.all(assetsTree.map(async (asset) => {
+    assetsTree.map(async (asset) => {
         if (asset.parentId) {
             const parent = nodeMap[asset.parentId];
             if (parent) {
@@ -28,30 +37,30 @@ async function GenerateAssetsRoots(assetsTree: iTreeNodeAssets[]): Promise<iTree
         } else {
             rootsAssets.push(asset);
         }
-    }));
+    });
 
     return rootsAssets;
 }
 
-async function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], assets: iAsset[]): Promise<iTreeBranch[]> {
-    const assetsRoots = await GenerateAssetsRoots(assets);
+function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], assets: iAsset[]): iTreeBranch[] {
+    const assetsRoots = GenerateAssetsRoots(assets);
     const assetsMap: { [key: string]: iTreeNodeAssets } = {};
     const nodeMap: { [key: string]: iTreeBranch } = {};
     const rootsLocations: iTreeBranch[] = [];
 
     
-    await Promise.all(assetsRoots.map(async (asset) => {
+    assetsRoots.map((asset) => {
         assetsMap[asset.id] = asset;
-    }));
+    });
 
     
-    await Promise.all(locationsTree.map(async (location) => {
+    locationsTree.map( (location) => {
         location.children = [];
         location.type = "Location";
         nodeMap[location.id] = location;
-    }));
+    });
 
-    await Promise.all(locationsTree.map(async (location) => {
+    locationsTree.map( (location) => {
         if (location.parentId) {
             const parent = nodeMap[location.parentId];
             if (parent) {
@@ -60,15 +69,15 @@ async function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], asset
         } else {
             rootsLocations.push(location);
         }
-    }));
+    });
 
     
-    await Promise.all(locationsTree.map(async (location) => {
+    locationsTree.map( (location) => {
         const assetsUnderLocation = Object.values(assetsMap).filter(asset => asset.locationId === location.id);
         if (assetsUnderLocation.length > 0) {
             location.children!.push(...assetsUnderLocation);
         }
-    }));
+    });
 
     
     const componentWithoutLocationAssets = assetsRoots.filter(asset => asset.type === "ComponentWithoutLocation");
