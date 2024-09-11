@@ -21,7 +21,7 @@ export const Route = createFileRoute('/company/$companyId')({
 
 function Company() {
     const { companyId } = useParams({ from: '/company/$companyId' });
-    const company = useAppSelector((state) => state.companies.find((company) => company.id == companyId))
+    const company = useAppSelector((state) => state.companies.allCompanys.find((company) => company.id == companyId))
     const [, setTreeSearch] = useTreeSearch();
     const [searchValue, setSearchValue] = useState("")
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {

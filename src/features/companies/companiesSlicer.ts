@@ -1,14 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { iCompany } from "../../interfaces/iCompany";
 
-const initialState: iCompany[] = [];
+type copanies = {
+    allCompanys: iCompany[]
+}
+
+const initialState: copanies = {
+    allCompanys: []
+};
 
 export const assetsSlice = createSlice({
     name: "companies",
     initialState,
     reducers: {
         setCompaniesArray(state, action: PayloadAction<iCompany[]>) {
-            return state = action.payload;
+            state.allCompanys = action.payload;
         }
     }
 })

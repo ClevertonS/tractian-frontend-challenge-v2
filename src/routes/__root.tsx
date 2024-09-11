@@ -12,7 +12,7 @@ export const Route = createRootRoute({
 })
 
 function Root() {
-  const companies = useAppSelector((state) => state.companies)
+  const companies = useAppSelector((state) => state.companies.allCompanys)
   const dispatch = useAppDispatch()
   const location = useLocation();
   const navigate = useNavigate();

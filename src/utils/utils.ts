@@ -6,13 +6,12 @@ import { setCompanyTree } from "../features/companyTree/companyTreeSlicer";
 import { Dispatch } from "@reduxjs/toolkit";
 
 
-export async function fetchCompanyById(id: string, dispatch: Dispatch, isPending: boolean, startTransition:TransitionStartFunction) {
+export async function fetchCompanyById(id: string, dispatch: Dispatch, startTransition:TransitionStartFunction) {
     const locations = await fetchData<iLocation>(id, 'locations');
     const assets = await fetchData<iAsset>(id, 'assets');
     startTransition(() => {
         
         const result = GenerateLocationsRoots(locations, assets);
-        console.log("morri :(")
         dispatch(setCompanyTree(result))
     })
 
