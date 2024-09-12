@@ -5,6 +5,7 @@ import OpenArrow from "../assets/icons/OpenArrow.svg"
 import { useState } from "react";
 import ComponentButton from "./component-button";
 import { iTreeBranch } from "../interfaces/iTree";
+import { useAppSelector } from "../app/store";
 
 export interface iNodeProps {
     node: iTreeBranch
@@ -13,17 +14,18 @@ export interface iNodeProps {
 
 export default function NodeDetails({ node, isSearch = false }: iNodeProps, ) {
     const [isOpen, setIsOpen] = useState(isSearch);
+    const isSearching = useAppSelector((state) => state.companyTree.isSearching)
     const hasChildren = node.children && node.children.length > 0;
     function togleOpen() {
         setIsOpen(!isOpen)
     }
     return (<div>
         <div onClick={togleOpen} className="flex flex-row cursor-pointer text-sm mb-1 gap-1">
-            {hasChildren && (isOpen ? <img className="ml-1" src={DownArrow} /> : <img className="ml-1" src={OpenArrow} />)}
+            {hasChildren && ((isOpen || isSearching) ? <img className="ml-1" src={DownArrow} /> : <img className="ml-1" src={OpenArrow} />)}
             <SummaryType node={node} />
         </div>
         <div className="ml-8">
-            {hasChildren && isOpen && (
+            {hasChildren && (isOpen || isSearching) && (
                 <div className="relative">
                     <span className="-left-6 absolute border-l-2 border-black border-opacity-5 h-full"/>
                     {node.children!.map((child) => (

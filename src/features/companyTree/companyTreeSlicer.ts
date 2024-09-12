@@ -29,7 +29,6 @@ export const companyTreeSlcier = createSlice({
         {
             state.tree = action.payload;
             state.searchResult = state.tree
-            console.log(state.tree)
         },
         setSearchNode(state, action: PayloadAction<iTreeBranch[] | []>)
         {
@@ -47,6 +46,7 @@ export const companyTreeSlcier = createSlice({
             state.isAlertFilter = action.payload
             state.isLoadingData = true
             if (state.isAlertFilter){
+                state.isSearching = true
                 if(state.isSensorTypeFilter) {
                 state.searchResult = findNodesContainingFilter(state.searchResult, "both")
                 state.isLoadingData = false
@@ -58,10 +58,11 @@ export const companyTreeSlcier = createSlice({
                 if(state.isSensorTypeFilter) {
                     state.searchResult = state.tree
                     state.searchResult = findNodesContainingFilter(state.searchResult, "energy")
+                    state.isSearching = true
                     state.isLoadingData = false
                 } else {
-                    console.log(1)
                     state.searchResult = state.tree
+                    state.isSearching = false
                     state.isLoadingData = false
                 }
             }
@@ -71,6 +72,7 @@ export const companyTreeSlcier = createSlice({
             state.isSensorTypeFilter = action.payload
             state.isLoadingData = true
             if (action.payload){
+                state.isSearching = true
                 if(state.isAlertFilter) {
                 state.searchResult = findNodesContainingFilter(state.searchResult, "both")
                 state.isLoadingData = false
@@ -82,9 +84,11 @@ export const companyTreeSlcier = createSlice({
                 if(state.isAlertFilter) {
                     state.searchResult = state.tree
                     state.searchResult = findNodesContainingFilter(state.searchResult, "alert")
+                    state.isSearching = true
                     state.isLoadingData = false
                 } else {
                     state.searchResult = state.tree
+                    state.isSearching = false
                     state.isLoadingData = false
                 }
             }
@@ -111,38 +115,61 @@ function findComponentById(tree: iTreeBranch[], componentId: string): iTreeBranc
     return null;
 }
 
+function filterNodeByType(
+    node: iTreeBranch,
+    filterName: "alert" | "energy" | "both"
+  ): iTreeBranch | null{
+
+    let _Match = false;
+    if (filterName == "alert") {
+        _Match = node.status == filterName
+    } else if(filterName == "energy") { 
+        _Match = node.sensorType == filterName
+    } else {
+        _Match = node.status == "alert" && node.sensorType == "energy"
+    }
+  
+    let filteredChildren: iTreeBranch[] = []
+  
+    if (node.children) {
+      filteredChildren = findNodesContainingFilter(node.children, filterName)
+    }
+  
+    if ((_Match) || filteredChildren.length > 0) {
+      return {
+        ...node,
+        children:
+          filteredChildren.length > 0 ? filteredChildren : node.children || [],
+      }
+    }
+  
+    return null
+  }
+
+
 function findNodesContainingFilter (nodes: iTreeBranch[], filterName: "alert" | "energy" | "both"): iTreeBranch[] {
     const result: iTreeBranch[] = [];
  
     if (filterName == "alert") {
         nodes.forEach((node) => {
-            if (node.status == "alert") {
-                result.push(node)
-            }
-    
-            if (node.children) {
-                result.push(...findNodesContainingFilter(node.children, filterName))
-            }
+            const filteredNode = filterNodeByType(node, filterName)
+            if (filteredNode !== null) {
+                result.push(filteredNode)
+              }
         });
     } else if (filterName == "energy") {
         nodes.forEach((node) => {
-            if (node.sensorType == "energy") {
-                result.push(node)
-            }
-    
-            if (node.children) {
-                result.push(...findNodesContainingFilter(node.children, filterName))
-            }
+            const filteredNode = filterNodeByType(node, filterName)
+            if (filteredNode !== null) {
+                result.push(filteredNode)
+              }
         });
     } else {
         nodes.forEach((node) => {
-            if ((node.sensorType == "energy") && (node.status == "alert")) {
-                result.push(node)
-            }
-    
-            if (node.children) {
-                result.push(...findNodesContainingFilter(node.children, filterName))
-            }
+            const filteredNode = filterNodeByType(node, filterName)
+            if (filteredNode !== null) {
+                result.push(filteredNode)
+              }
         });
     }
     return result;

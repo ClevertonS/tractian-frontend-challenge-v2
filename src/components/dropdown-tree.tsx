@@ -10,7 +10,6 @@ import Loading from "./loading";
 export default function DropdownTree() {
     const { companyId } = useParams({ from: '/company/$companyId' });
     const dispatch = useDispatch();
-    const isSearching = useAppSelector((state) => state.companyTree.isSearching)
     const isLoading = useAppSelector((state) => state.companyTree.isLoadingData, shallowEqual)
     const loaderData = useAppSelector((state) => state.companyTree.searchResult, shallowEqual)
     useEffect(() => {
@@ -34,7 +33,7 @@ export default function DropdownTree() {
     return (
         <div className="mx-1 my-2 h-full overflow-auto">
             {loaderData.map((node) =>
-                <NodeDetails key={node.id} node={node} isSearch={isSearching} />
+                <NodeDetails key={node.id} node={node} />
             )}
         </div>
     )

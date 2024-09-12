@@ -25,7 +25,6 @@ function AssetsSection() {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setComponentById(assetId))
-    console.log(component)
   }, [assetId, component, dispatch])
 
   useEffect(() => {

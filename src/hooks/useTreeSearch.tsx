@@ -5,21 +5,40 @@ import useDebounce from "./useDebounce";
 import { useDispatch } from "react-redux";
 import { setIsSearching, setSearchNode } from "../features/companyTree/companyTreeSlicer";
 
-function findNodesContainingName (nodes: iTreeBranch[], nodeName: string): iTreeBranch[] {
+function findNodesContainingName (nodes: iTreeBranch[], assetName: string): iTreeBranch[] {
     const result: iTreeBranch[] = [];
-    
     nodes.forEach((node) => {
-        if (node.name.includes(nodeName)) {
-            result.push(node)
-        }
-
-        if (node.children) {
-            result.push(...findNodesContainingName(node.children, nodeName))
-        }
+        const filteredNode = filterNode(node, assetName)
+        if (filteredNode !== null) {
+            result.push(filteredNode)
+          }
     });
 
     return result;
 }
+
+function filterNode(
+    node: iTreeBranch,
+    nodeSearch: string
+  ): iTreeBranch | null{
+    const _Match = node.name.includes(nodeSearch)
+  
+    let filteredChildren: iTreeBranch[] = []
+  
+    if (node.children) {
+      filteredChildren = findNodesContainingName (node.children, nodeSearch)
+    }
+  
+    if ((_Match) || filteredChildren.length > 0) {
+      return {
+        ...node,
+        children:
+          filteredChildren.length > 0 ? filteredChildren : node.children || [],
+      }
+    }
+  
+    return null
+  }
 
 export default function useTreeSearch()
 {
