@@ -3,7 +3,7 @@
 ## Vídeo
 https://github.com/user-attachments/assets/4eb17f27-abc7-45a0-9a52-2d5369efb4b3
 
-Deploy: https://tractian-frontend-challenge-v2-8z0sx85ha.vercel.app/company/662fd0ee639069143a8fc387
+Deploy: https://tractian-frontend-challenge-v2.vercel.app/
 
 ## Desafio Tractian 
 https://github.com/tractian/challenges/tree/main/front-end
