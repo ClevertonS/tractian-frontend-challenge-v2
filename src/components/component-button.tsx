@@ -14,8 +14,12 @@ export default function ComponentButton({node}: iNodeProps) {
     const location = useLocation();
     const navigate = useNavigate();
     useEffect(() => {
-        location.pathname == `/company/${companyId}/${node.id}` ? setIsCurrentUrlId(true) : setIsCurrentUrlId(false)
-    })
+        if (location.pathname == `/company/${companyId}/${node.id}`) {
+            setIsCurrentUrlId(true)
+        } else {
+            setIsCurrentUrlId(false)
+        }
+    }, [companyId, location.pathname, node.id])
     return(
     <button onClick={() => !isCurrentUrlId && navigate({to: `/company/${companyId}/${node.id}`})} className={`flex flex-row items-center w-full gap-1 px-1 py-[1px] text-sm ${ isCurrentUrlId? "bg-blue-500 text-white" : " text-node-font"}`}>
         <Codepen onFocus={isCurrentUrlId} />
