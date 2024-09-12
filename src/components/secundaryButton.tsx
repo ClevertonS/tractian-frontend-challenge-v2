@@ -1,6 +1,4 @@
 import { ReactNode } from "@tanstack/react-router";
-import useFilterTreeByPropety from "../hooks/useFilterTreeByPropety";
-import { useEffect } from "react";
 
 interface iSecundaryButton {
     isActivated: boolean;
@@ -10,13 +8,6 @@ interface iSecundaryButton {
 }
 
 export default function SecundaryButton({ isActivated = false, children, onClick , criteria }: iSecundaryButton) {
-    
-    const [setIsFilterActive , setCriteria]  = useFilterTreeByPropety();
-    useEffect(() => {
-        setIsFilterActive(isActivated)
-        setCriteria(criteria)
-    }, [isActivated])
-    
     return (
         <button onClick={onClick} className={"border border-solid font-semibold text-sm px-[15px] py=[5px] flex flex-row items-center gap-[6px] md:py-[5px] md:px-[15px] lg:py-[7px] lg:px-[15px] " + (isActivated ? "border-blue-500 bg-blue-500 text-white hover:bg-opacity-70" : " bg-white border-gray-200 text-gray-600 hover:border-blue-500")} >
             { criteria == "sensorType" ? 

@@ -26,16 +26,16 @@ function AssetsSection() {
   useEffect(() => {
     dispatch(setComponentById(assetId))
     console.log(component)
-  }, [assetId])
+  }, [assetId, component, dispatch])
 
   useEffect(() => {
     dispatch(setComponentById(""))
-  }, [companyId])
+  }, [companyId, dispatch])
   return (
     <section className='w-full h-[80vh] border border-gray-200 border-solid rounded-sm flex flex-col'>
       <div className='px-4 py-3 border-b border-solid border-gray-200 flex flex-row items-center gap-2'>
         <h2 className='font-semibold text-lg text-gray-950'>{component?.name}</h2>
-        <SensorType status={component?.status!} sensorType={component?.sensorType!} />
+        <SensorType status={component?.status ? component.status : null} sensorType={component?.sensorType ? component.sensorType : null} />
       </div>
       <div className='flex flex-col p-6 w-full max-h-min'>
         <div className='flex flex-row gap-6'>

@@ -6,12 +6,9 @@ import { iTreeBranch, iTreeNodeAssets } from "../interfaces/iTree";
 export async function fetchCompanyById(id: string): Promise<iTreeBranch[]> {
     const locations = await fetchData<iLocation>(id, 'locations');
     const assets = await fetchData<iAsset>(id, 'assets');
+    const tree = GenerateLocationTree(locations, assets)
 
-    const locationLookup = GenerateLocationTree(locations, assets)
-    console.log(locationLookup)
-
-
-    return locationLookup
+    return tree
 }
 
 function GenerateAssetsTree(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
@@ -19,12 +16,12 @@ function GenerateAssetsTree(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
     const rootsAssets: iTreeNodeAssets[] = [];
 
     assetsTree.forEach(item => {
+        const parent = item.locationId == null ? item.parentId : item.locationId
         const node: iTreeNodeAssets = {
             id: item.id,
             name: item.name,
-            parentId: item.parentId,
+            parentId: parent,
             gatewayId: item.gatewayId,
-            locationId: item.locationId,
             sensorId: item.sensorId,
             status: item.status,
             sensorType: item.sensorType,
@@ -37,7 +34,6 @@ function GenerateAssetsTree(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
     
     assetsTree.forEach(item => {
         const node = lookup[item.id];
-
         if (item.parentId) {
             
             if (lookup[item.parentId]) {
@@ -66,7 +62,7 @@ function GenerateAssetsTree(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
 function GenerateLocationTree(locationFlatJsonObject: iTreeBranch[], assets: iAsset[]): iTreeBranch[] {
     const assetsTree = GenerateAssetsTree(assets)
     const componentWithoutLocation = assetsTree.filter((component) => component.type == "ComponentWithoutLocation")
-
+    
     const lookup: { [key: string]: iTreeBranch } = {};
     const rootsLocation: iTreeBranch[] = [];
 
@@ -84,8 +80,11 @@ function GenerateLocationTree(locationFlatJsonObject: iTreeBranch[], assets: iAs
 
 
     locationFlatJsonObject.forEach(location => {
+        
         const node = lookup[location.id];
-
+        
+        const assets = assetsTree.filter(asset => asset.parentId == node.id)
+        node.children!.push(...assets)
         if (location.parentId) {
             
             if (lookup[location.parentId]) {
@@ -100,11 +99,11 @@ function GenerateLocationTree(locationFlatJsonObject: iTreeBranch[], assets: iAs
                 };
             }
         } else {
-            const assets = assetsTree.filter(asset => asset.locationId == node.id)
-            node.children!.push(...assets)
+            
             rootsLocation.push(node);
         }
     });
+    
     const result = rootsLocation.concat(componentWithoutLocation)
     return result
 }
