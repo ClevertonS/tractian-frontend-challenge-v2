@@ -1,88 +1,112 @@
 import { iAsset } from "../interfaces/iAsset";
 import { iLocation } from "../interfaces/iLocation";
-import { iTreeBranch, iTreeNodeAssets, iTreeNodeLocations } from "../interfaces/iTree";
-import { TransitionStartFunction } from "react";
-import { setCompanyTree } from "../features/companyTree/companyTreeSlicer";
-import { Dispatch } from "@reduxjs/toolkit";
+import { iTreeBranch, iTreeNodeAssets } from "../interfaces/iTree";
 
 
-export async function fetchCompanyById(id: string, dispatch: Dispatch, startTransition:TransitionStartFunction) {
+export async function fetchCompanyById(id: string): Promise<iTreeBranch[]> {
     const locations = await fetchData<iLocation>(id, 'locations');
     const assets = await fetchData<iAsset>(id, 'assets');
-    startTransition(() => {
-        
-        const result = GenerateLocationsRoots(locations, assets);
-        dispatch(setCompanyTree(result))
-    })
 
+    const locationLookup = GenerateLocationTree(locations, assets)
+    console.log(locationLookup)
+
+
+    return locationLookup
 }
 
-function GenerateAssetsRoots(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
-    const nodeMap: { [key: string]: iTreeNodeAssets } = {};
+function GenerateAssetsTree(assetsTree: iTreeNodeAssets[]): iTreeNodeAssets[] {
+    const lookup: { [key: string]: iTreeNodeAssets } = {};
     const rootsAssets: iTreeNodeAssets[] = [];
 
-    assetsTree.map(async (asset) => {
-        asset.children = [];
-        asset.type = determineAssetType(asset);
-        nodeMap[asset.id] = asset;
-    });
+    assetsTree.forEach(item => {
+        const node: iTreeNodeAssets = {
+            id: item.id,
+            name: item.name,
+            parentId: item.parentId,
+            gatewayId: item.gatewayId,
+            locationId: item.locationId,
+            sensorId: item.sensorId,
+            status: item.status,
+            sensorType: item.sensorType,
+            type: determineAssetType(item),
+            children: []
+        };
 
-    assetsTree.map(async (asset) => {
-        if (asset.parentId) {
-            const parent = nodeMap[asset.parentId];
-            if (parent) {
-                parent.children!.push(asset);
+        lookup[item.id] = node;
+    });
+    
+    assetsTree.forEach(item => {
+        const node = lookup[item.id];
+
+        if (item.parentId) {
+            
+            if (lookup[item.parentId]) {
+                lookup[item.parentId].children!.push(node);
+            } else {
+                lookup[item.parentId] = {
+                    id: item.parentId,
+                    name: '',
+                    parentId: null,
+                    gatewayId: undefined,
+                    locationId: undefined,
+                    sensorId: undefined,
+                    status: undefined,
+                    sensorType: undefined,
+                    type: undefined,
+                    children: [node]
+                };
             }
         } else {
-            rootsAssets.push(asset);
+            rootsAssets.push(node);
         }
     });
-
     return rootsAssets;
 }
 
-function GenerateLocationsRoots(locationsTree: iTreeNodeLocations[], assets: iAsset[]): iTreeBranch[] {
-    const assetsRoots = GenerateAssetsRoots(assets);
-    const assetsMap: { [key: string]: iTreeNodeAssets } = {};
-    const nodeMap: { [key: string]: iTreeBranch } = {};
-    const rootsLocations: iTreeBranch[] = [];
+function GenerateLocationTree(locationFlatJsonObject: iTreeBranch[], assets: iAsset[]): iTreeBranch[] {
+    const assetsTree = GenerateAssetsTree(assets)
+    const componentWithoutLocation = assetsTree.filter((component) => component.type == "ComponentWithoutLocation")
 
-    
-    assetsRoots.map((asset) => {
-        assetsMap[asset.id] = asset;
+    const lookup: { [key: string]: iTreeBranch } = {};
+    const rootsLocation: iTreeBranch[] = [];
+
+    locationFlatJsonObject.forEach(location => {
+        const node: iTreeBranch = {
+            id: location.id,
+            name: location.name,
+            parentId: location.parentId,
+            type: 'Location',
+            children: []
+        };
+
+        lookup[location.id] = node;
     });
 
-    
-    locationsTree.map( (location) => {
-        location.children = [];
-        location.type = "Location";
-        nodeMap[location.id] = location;
-    });
 
-    locationsTree.map( (location) => {
+    locationFlatJsonObject.forEach(location => {
+        const node = lookup[location.id];
+
         if (location.parentId) {
-            const parent = nodeMap[location.parentId];
-            if (parent) {
-                parent.children!.push(location);
+            
+            if (lookup[location.parentId]) {
+                lookup[location.parentId].children!.push(node);
+            } else {
+                lookup[location.parentId] = {
+                    id: location.parentId,
+                    name: "",
+                    parentId: null,
+                    type: "Location",
+                    children: [node]
+                };
             }
         } else {
-            rootsLocations.push(location);
+            const assets = assetsTree.filter(asset => asset.locationId == node.id)
+            node.children!.push(...assets)
+            rootsLocation.push(node);
         }
     });
-
-    
-    locationsTree.map( (location) => {
-        const assetsUnderLocation = Object.values(assetsMap).filter(asset => asset.locationId === location.id);
-        if (assetsUnderLocation.length > 0) {
-            location.children!.push(...assetsUnderLocation);
-        }
-    });
-
-    
-    const componentWithoutLocationAssets = assetsRoots.filter(asset => asset.type === "ComponentWithoutLocation");
-    rootsLocations.push(...componentWithoutLocationAssets);
-
-    return rootsLocations;
+    const result = rootsLocation.concat(componentWithoutLocation)
+    return result
 }
 
 
@@ -96,7 +120,7 @@ async function fetchData<T>(id: string, endpoint: string): Promise<T[]> {
         return data;
     } catch (error) {
         console.error(`Failed to fetch ${endpoint}:`, error);
-        return []; // Retorna um array vazio em caso de erro
+        return [];
     }
 }
 
