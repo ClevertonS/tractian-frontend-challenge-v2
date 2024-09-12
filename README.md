@@ -1,50 +1,22 @@
-# React + TypeScript + Vite
+![Frame 62 (2)](https://github.com/user-attachments/assets/b1b4c2f0-5a71-4911-810d-778daa5edadd)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Vídeo
+https://github.com/user-attachments/assets/51c174ef-f88c-4ded-8c5c-6c78cd30968e
 
-Currently, two official plugins are available:
+Deploy: https://tractian-frontend-challenge-v2-8z0sx85ha.vercel.app/company/662fd0ee639069143a8fc387
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Desafio Tractian 
+https://github.com/tractian/challenges/tree/main/front-end
 
-## Expanding the ESLint configuration
+Neste desafio, meu objetivo foi desenvolver uma Aplicação de Visualização de Árvore para a gestão de ativos industriais. Os ativos, que vão desde equipamentos de fabricação até sistemas de energia, são organizados em uma hierarquia que inclui componentes, ativos e locais.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+O maior desafio que enfrentei foi desenvolver a árvore de relacionamento entre os ativos e os locais. Conseguir representar essa hierarquia de forma eficiente foi crucial. Com sucesso, implementei a relação entre ativos e locais com uma complexidade de O(n), garantindo que a visualização fosse precisa e a navegação intuitiva, mesmo com grandes volumes de dados.
 
-- Configure the top-level `parserOptions` property like this:
+## Tecnologias utilizadas
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- Typescript
+- Vite
+- React
+- TailwindCss
+- Redux Toolkit
+- Tanstack Router
