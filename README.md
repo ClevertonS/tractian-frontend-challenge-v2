@@ -20,3 +20,11 @@ O maior desafio que enfrentei foi desenvolver a árvore de relacionamento entre 
 - TailwindCss
 - Redux Toolkit
 - Tanstack Router
+
+## Quais pontos do projeto você melhoraria se tivesse mais tempo:
+
+- Adição de Virtual Render: Implementaria a renderização virtual para otimizar o desempenho e a experiência do usuário em listas grandes, carregando apenas os itens visíveis na tela e melhorando a performance geral da aplicação.
+
+- Aprimoramento do Sistema de Pesquisa: Melhoraria o sistema de pesquisa para incluir os parets, proporcionando uma navegação mais intuitiva, facilitando a compreensão e o acesso às informações.
+
+- Carregamento do JSON via Web Stream: Implementaria o carregamento de dados JSON via Web Stream para reduzir o tempo de resposta ao usuário, garantindo uma experiência mais ágil e eficiente ao processar e exibir dados.
