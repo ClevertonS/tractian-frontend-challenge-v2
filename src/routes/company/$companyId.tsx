@@ -55,7 +55,7 @@ function Company() {
                 </div>
             </div>
             <div className="flex flex-row gap-2 h-[80vh]">
-                <div className="w-1/3 h-full border border-solid border-gray-150 rounded-sm">
+                <div className="w-1/3 h-full border border-solid border-gray-150 rounded-sm flex flex-col">
                     <SearchBar value={searchValue} onChange={handleSearchChange} />
                     <DropdownTree />
                 </div>

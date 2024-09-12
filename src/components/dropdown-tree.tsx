@@ -32,7 +32,7 @@ export default function DropdownTree() {
         return (<Loading />)
     }
     return (
-        <div className="mx-1 my-2 overflow-auto">
+        <div className="mx-1 my-2 h-full overflow-auto">
             {loaderData.map((node) =>
                 <NodeDetails key={node.id} node={node} isSearch={isSearching} />
             )}
